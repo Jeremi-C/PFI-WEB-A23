@@ -5,6 +5,9 @@ function showWaitingGif() {
     eraseContent();
     $("#content").append($("<div class='waitingGifcontainer'><img class='waitingGif' src='images/Loading_icon.gif' /></div>'"));
 }
+function eraseHeader() {
+    $("#header").empty();
+}
 function eraseContent() {
     $("#content").empty();
 }
@@ -15,15 +18,16 @@ function restoreContentScrollPosition() {
     $("#content")[0].scrollTop = contentScrollPosition;
 }
 function UpdateHeader( nom,  fonction, loggedUser=null) {
-    $("#header").empty();
+
+    eraseHeader()
 
     $("#header").append(   
         $(`
-        <div id="header">
-        <span title="Liste des photos" id="${fonction}cmd">
-        <img src="images/PhotoCloudLogo.png" class="appLogo">
-         </span>
-        <span class="viewTitle"> ${nom}
+        
+            <span title="Liste des photos" id="${fonction}cmd">
+                <img src="images/PhotoCloudLogo.png" class="appLogo">
+            </span>
+            <span class="viewTitle"> ${nom}
        
         </span>
         `+ (nom=="Liste des photos"?`<div class="cmdIcon fa fa-plus" id="newPhotoCmd" title="Ajouter une photo"></div>`:``) +
@@ -40,7 +44,7 @@ function UpdateHeader( nom,  fonction, loggedUser=null) {
          <div data-bs-toggle="dropdown" aria-expanded="false">
          <i class="cmdIcon fa fa-ellipsis-vertical"></i>
          </div>         
-        `+ ((loggedUser!=null && loggedUser.type==1)?`<div class="dropdown-menu noselect">
+        `+ ((loggedUser.type!=null && loggedUser.type==1)?`<div class="dropdown-menu noselect">
         <span class="dropdown-item" id="manageUserCm">
         <i class="menuIcon fas fa-user-cog mx-2"></i>
         Gestion des usagers
@@ -81,60 +85,62 @@ function UpdateHeader( nom,  fonction, loggedUser=null) {
         Mes photos
         </span>
         <div class>`
-        :((loggedUser!=null && loggedUser.type==0)?`
+        :((loggedUser.type!=null && loggedUser.type==0)?`
         <div class="dropdown-divider"></div>
         <span class="dropdown-item" id="logoutCmd">
-        <i class="menuIcon fa fa-sign-out mx-2"></i>
-        Déconnexion
+            <i class="menuIcon fa fa-sign-out mx-2"></i>
+            Déconnexion
         </span>
         <span class="dropdown-item" id="editProfilMenuCmd">
-        <i class="menuIcon fa fa-user-edit mx-2"></i>
-        Modifier votre profil
+            <i class="menuIcon fa fa-user-edit mx-2"></i>
+            Modifier votre profil
         </span>
         <div class="dropdown-divider"></div>
         <span class="dropdown-item" id="listPhotosMenuCmd">
-        <i class="menuIcon fa fa-image mx-2"></i>
-        Liste des photos
+            <i class="menuIcon fa fa-image mx-2"></i>
+            Liste des photos
         </span>
         <div class="dropdown-divider"></div>
         <span class="dropdown-item" id="sortByDateCmd">
-        <i class="menuIcon fa fa-check mx-2"></i>
-        <i class="menuIcon fa fa-calendar mx-2"></i>
-        Photos par date de création
+            <i class="menuIcon fa fa-check mx-2"></i>
+            <i class="menuIcon fa fa-calendar mx-2"></i>
+            Photos par date de création
         </span>
         <span class="dropdown-item" id="sortByOwnersCmd">
-        <i class="menuIcon fa fa-fw mx-2"></i>
-        <i class="menuIcon fa fa-users mx-2"></i>
-        Photos par créateur
+            <i class="menuIcon fa fa-fw mx-2"></i>
+            <i class="menuIcon fa fa-users mx-2"></i>
+            Photos par créateur
         </span>
         <span class="dropdown-item" id="sortByLikesCmd">
-        <i class="menuIcon fa fa-fw mx-2"></i>
-        <i class="menuIcon fa fa-user mx-2"></i>
-        Photos les plus aiméés
+            <i class="menuIcon fa fa-fw mx-2"></i>
+            <i class="menuIcon fa fa-user mx-2"></i>
+            Photos les plus aiméés
         </span>
         <span class="dropdown-item" id="ownerOnlyCmd">
-        <i class="menuIcon fa fa-fw mx-2"></i>
-        <i class="menuIcon fa fa-user mx-2"></i>
-        Mes photos
-        </span>
-        <div class>`
-        :`<span class="dropdown-item" id="loginCmd">
+            <i class="menuIcon fa fa-fw mx-2"></i>
+            <i class="menuIcon fa fa-user mx-2"></i>
+            Mes photos
+        </span>`:`<span class="dropdown-item" id="loginCmd">
         <i class="menuIcon fa fa-sign-out mx-2"></i>
         connection
-        </span>
-        <div class="dropdown-divider"></div>
-        `) + `
-        <div class="dropdown-divider"></div>
-        <span class="dropdown-item" id="aboutCmd">
-        <i class="menuIcon fa fa-info-circle mx-2"></i>
-        À propos...
-        </span>
-        </div>
+    </span>
+                    
+                    
+                    `)+`
+                    <div class="dropdown-divider"></div>
 
+                    <div class="dropdown-item" id="aboutCmd">
+                        <i class="menuIcon fa fa-info-circle mx-2"></i> À propos...
+                    </div>
+                </div>
+            </div>
+                
+        
+
+               
+             </div>
         </div>
-        </div>
-        </div>
-        `)))
+        `))
         
 }
 function renderAbout() {
