@@ -14,7 +14,7 @@ function saveContentScrollPosition() {
 function restoreContentScrollPosition() {
     $("#content")[0].scrollTop = contentScrollPosition;
 }
-function updateHeader( nom,  fonction, loggedUser=null) {
+function UpdateHeader( nom,  fonction, loggedUser=null) {
     $("#header").empty();
 
     $("#header").append(   
@@ -40,7 +40,7 @@ function updateHeader( nom,  fonction, loggedUser=null) {
          <div data-bs-toggle="dropdown" aria-expanded="false">
          <i class="cmdIcon fa fa-ellipsis-vertical"></i>
          </div>         
-        `+ (loggedUser.type==1?`<div class="dropdown-menu noselect">
+        `+ ((loggedUser.type!=null && loggedUser.type==1)?`<div class="dropdown-menu noselect">
         <span class="dropdown-item" id="manageUserCm">
         <i class="menuIcon fas fa-user-cog mx-2"></i>
         Gestion des usagers
@@ -81,7 +81,7 @@ function updateHeader( nom,  fonction, loggedUser=null) {
         Mes photos
         </span>
         <div class>`
-        :loggedUser.type==0?`
+        :((loggedUser.type!=null && loggedUser.type==0)?`
         <div class="dropdown-divider"></div>
         <span class="dropdown-item" id="logoutCmd">
         <i class="menuIcon fa fa-sign-out mx-2"></i>
@@ -134,7 +134,7 @@ function updateHeader( nom,  fonction, loggedUser=null) {
         </div>
         </div>
         </div>
-        `))
+        `)))
         
 }
 function renderAbout() {
