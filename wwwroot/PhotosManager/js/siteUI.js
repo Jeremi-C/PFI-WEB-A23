@@ -153,7 +153,7 @@ function renderLogin(login = {loginMessage:undefined, Email:undefined, EmailErro
     timeout();
     saveContentScrollPosition();
     eraseContent();
-    UpdateHeader("Connection...", "login");
+    UpdateHeader("Connection", "login");
     $("#content").append($(`
         <div class="content" style="text-align:center">` +
             (login.loginMessage!=undefined?`<h3>${login.loginMessage}</h3>`:``) +
@@ -182,7 +182,7 @@ function renderLogin(login = {loginMessage:undefined, Email:undefined, EmailErro
             </div>
 
         </div>
-        <script>document.getElementById("createProfilCmd").addEventListener("click", renderSingnUp);</script>`));
+        <script>document.getElementById("createProfilCmd").addEventListener("click", renderCreateProfil);</script>`));
         $("#loginForm").submit(function(e){
             e.preventDefault();
             API.login($("input[name=Email]").val(), $("input[name=Password]").val()).then((data)=>{
@@ -297,12 +297,12 @@ function renderProfil(){
 }
 
 
-function renderSingnUp(loginMessage, Email, EmailError, passwordError) {
-    timeout();
-    saveContentScrollPosition();
-    eraseContent();
-    UpdateHeader("Inscription", "singup");
-    $("#content").append($(`
+function renderCreateProfil() {
+    noTimeout(); // ne pas limiter le temps d’inactivité
+    eraseContent(); // effacer le conteneur #content
+    UpdateHeader("Inscription", "createProfil"); // mettre à jour l’entête et menu
+    $("#newPhotoCmd").hide(); // camouffler l’icone de commande d’ajout de photo
+    $("#content").append(`
     <form class="form" id="createProfilForm"'>
     <fieldset>
     <legend>Adresse ce courriel</legend>
@@ -360,13 +360,29 @@ function renderSingnUp(loginMessage, Email, EmailError, passwordError) {
     newImage='true'
     controlId='Avatar'
     imageSrc='PhotosManager/images/no-avatar.png'
-    waitingImage="images/Loading_icon.gif">
+    waitingImage='PhotosManager/images/Loading_icon.gif'>
     </div>
     </fieldset>
-    <input type='submit' name='submit' id='saveUserCmd' value="Enregistrer" class="form-control btn-primary">
+    <input type='button' name='submit' id='saveUserCmd' value="Enregistrer" class="form-control btn-primary">
     </form>
     <div class="cancel">
     <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
-    </div>`
-    ))
-}
+    </div>`);
+    $('#loginCmd').on('click', renderLogin); // call back sur clic
+    initFormValidation();
+    initImageUploaders();
+    $('#abortCmd').on('click', renderLogin); // call back sur clic
+     // ajouter le mécanisme de vérification de doublon de courriel
+    addConflictValidation(API.checkConflictURL(), 'Email', 'saveUser');
+     // call back la soumission du formulaire
+    $('#createProfilForm').on("submit", function (event) {
+        
+    let profil = getFormData($('#createProfilForm'));
+    delete profil.matchedPassword;
+    delete profil.matchedEmail;
+    event.preventDefault();// empêcher le fureteur de soumettre une requête de soumission
+    showWaitingGif(); // afficher GIF d’attente
+    createProfil(profil); // commander la création au service API
+    });
+    }
+
