@@ -132,7 +132,7 @@ function UpdateHeader( nom,  fonction, loggedUser=null) {
     </span>
                     
                     
-                    `))+`
+                    `)+`
                     <div class="dropdown-divider"></div>
 
                     <div class="dropdown-item" id="aboutCmd">
@@ -173,40 +173,69 @@ function renderAbout() {
             </div>
         `))
 }
-function renderLogin(loginMessage, Email, EmailError, passwordError) {
+function renderLogin(login = {loginMessage:undefined, Email:undefined, EmailError:undefined, passwordError:undefined}) {
     timeout();
     saveContentScrollPosition();
     eraseContent();
     UpdateHeader("Connection...", "login");
     $("#content").append($(`
-        <div class="content" style="text-align:center">
-            <h3>${loginMessage}</h3>
-            <form class="form" id="loginForm">
+        <div class="content" style="text-align:center">` +
+            (login.loginMessage!=undefined?`<h3>${login.loginMessage}</h3>`:``) +
+            `<form class="form" id="loginForm">
                 <input type='email'
                     name='Email'
                     class="form-control"
                     required
                     RequireMessage = 'Veuillez entrer votre courriel'
                     InvalidMessage = 'Courriel invalide'
-                    placeholder="adresse de courriel"
-                    value='${Email}'>.
-                <span style='color:red'>${EmailError}</span>
-                <input type='password'
+                    placeholder="adresse de courriel"` +
+                    (login.Email!=undefined?`value='${login.Email}'`:``) + `>` +
+                    (login.EmailError!=undefined?`<span style='color:red'>${login.EmailError}</span>`:``) + 
+                `<input type='password'
                     name='Password'
                     placeholder='Mot de passe'
                     class="form-control"
                     required
-                    RequireMessage = 'Veuillez entrer votre mot de passe'>
-                <span style='color:red'>${passwordError}</span>
-                <input type='submit' name='submit' value="Entrer" class="form-control btn-primary">
+                    RequireMessage = 'Veuillez entrer votre mot de passe'>` +
+                (login.passwordError!=undefined?`<span style='color:red'>${login.passwordError}</span>`:``) + 
+            `<input type='submit' name='submit' value="Entrer" class="form-control btn-primary">
             </form>
             <div class="form">
                 <hr>
                 <button class="form-control btn-info" id="createProfilCmd">Nouveau compte</button>
             </div>
-        </div>`))
+        </div>`));
+        $("#loginForm").submit(function(e){
+            e.preventDefault();
+            API.login($("input[name=Email]").val(), $("input[name=Password]").val()).then((data)=>{
+                if(data == false){
+                    switch(API.currentStatus){
+                        case 481:
+                            renderLogin({EmailError:API.currentHttpError})
+                            break;
+                        case 482:
+                            renderLogin({passwordError:API.currentHttpError})
+                            break;
+                    }
+                }
+                else if(data == "Le serveur ne répond pas"){
+                    renderLogin({loginMessage:data});
+                }
+                else{
+    
+                }
+            });
+        });
 }
 
-function addContent(){
-    renderAbout();
+function loadContent(page){
+    switch(page){
+        case "about":
+            renderAbout();
+            break;
+        case "login":
+            renderLogin();
+            break;
+    }
+    
 }
