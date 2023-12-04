@@ -98,7 +98,8 @@ function UpdateHeader( nom,  selected) {
         :`<span class="dropdown-item" id="loginCmd">
         <i class="menuIcon fa fa-sign-out mx-2"></i>
         connection
-    </span>         
+    </span>
+    <script>document.getElementById("loginCmd").addEventListener("click", renderLogin);</script>         
                     
                     `)+`
                     <div class="dropdown-divider"></div>
@@ -114,8 +115,7 @@ function UpdateHeader( nom,  selected) {
                
              </div>
         </div>
-        <script>document.getElementById("loginCmd").addEventListener("click", renderLogin);
-        document.getElementById("aboutCmd").addEventListener("click", renderAbout);</script>
+        <script>document.getElementById("aboutCmd").addEventListener("click", renderAbout);</script>
         `))
         
 }
@@ -129,7 +129,7 @@ function renderAbout() {
     timeout();
     saveContentScrollPosition();
     eraseContent();
-    UpdateHeader("À propos...", "about");
+    UpdateHeader("À propos", "about");
 
     $("#content").append(
         $(`
