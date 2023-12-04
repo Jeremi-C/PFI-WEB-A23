@@ -218,6 +218,8 @@ function renderLogin(login = {loginMessage:undefined, Email:undefined, EmailErro
                         case 482:
                             renderLogin({passwordError:API.currentHttpError})
                             break;
+                        default:
+                            renderLogin({loginMessage:"Le serveur ne répond pas"})
                     }
                 }
                 else if(data == "Le serveur ne répond pas"){
