@@ -96,5 +96,4 @@ export default class Response {
 
     internalError(errormessage = '') { return this.status(500, errormessage); }   // internal error status
     notImplemented(errormessage = '') { return this.status(501, errormessage); }  // Not implemented
-    serviceUnavailable(errormessage = '') { return this.status(503, errormessage); }  // Service Unavailable
 }

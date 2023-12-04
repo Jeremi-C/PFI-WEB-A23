@@ -81,7 +81,7 @@ class API {
     }
     static login(Email, Password) {
         API.initHttpState();
-        return Promise.race([new Promise(resolve => {
+        return new Promise(resolve => {
             $.ajax({
                 url: API.tokenRequestURL(),
                 contentType: 'application/json',
@@ -94,11 +94,7 @@ class API {
                 },
                 error: xhr => { API.setHttpErrorState(xhr); resolve(false); }
             });
-        }),
-            new Promise((resolve) =>
-            setTimeout(() => resolve("Le serveur ne répond pas"), 25000)
-      )
-    ]);
+        });
     }
     static verifyEmail(userId, verifyCode) {
         API.initHttpState();
