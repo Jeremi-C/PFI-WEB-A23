@@ -25,7 +25,7 @@ function UpdateHeader( nom,  fonction, loggedUser=null) {
         $(`
         
             <span title="Liste des photos" id="${fonction}cmd">
-                <img src="images/PhotoCloudLogo.png" class="appLogo">
+                <img src="PhotosManager/images/PhotoCloudLogo.png" class="appLogo">
             </span>
             <span class="viewTitle"> ${nom}
        
