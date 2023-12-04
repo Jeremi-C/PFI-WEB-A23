@@ -121,8 +121,9 @@ function UpdateHeader( nom,  selected) {
 }
 
 function deconnection(){
-    API.eraseLoggedUser();
-    renderLogin();
+    API.logout().then((data) => {
+        if(data)renderLogin();
+    })
 }
 
 function renderAbout() {
@@ -213,7 +214,7 @@ function renderProfil(){
     UpdateHeader("Profil", "profil");
     let loggedUser = API.retrieveLoggedUser();
     $("#content").append($(`
-    <form class="form" id="editProfilForm"'>
+    <form class="form" id="editProfilForm">
         <input type="hidden" name="Id" id="Id" value="${loggedUser.Id}"/>
         <fieldset>
             <legend>Adresse ce courriel</legend>
@@ -285,17 +286,43 @@ function renderProfil(){
         <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
     </div>
     <div class="cancel"> <hr>
-        <a href="confirmDeleteProfil.php">
-        <button class="form-control btn-warning">Effacer le compte</button>
-        </a>
+        <button class="form-control btn-warning" id="eraseAccount">Effacer le compte</button>
     </div>
-    <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);</script>`))
+    <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);
+    document.getElementById("eraseAccount").addEventListener("click", renderDeleteProfil);</script>`))
     $("#loginForm").submit(function(e){
 
 
     });
 }
 
+function renderDeleteProfil(){
+    timeout();
+    saveContentScrollPosition();
+    eraseContent();
+    UpdateHeader("Retrait de compte", "");
+    $("#content").append(`
+    <div class="aboutContainer">
+        <h1>Voulez-vous vraiment effacer votre compte?</h1>
+        <div class="cancel" style="margin-top:20px">
+            <button class="form-control btn-danger" id="eraseAccount">Effacer mon compte</button>
+        </div>
+        <div class="cancel" style="margin-top:20px">
+            <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
+        </div>
+    </div>
+    <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);
+    document.getElementById("eraseAccount").addEventListener("click", deleteProfil);</script>`);
+}
+
+function deleteProfil(){
+    console.log(API.retrieveLoggedUser());
+    API.unsubscribeAccount(API.retrieveLoggedUser().Id).then((data) =>
+    {
+        if(data)deconnection();
+        else renderProfil();
+    });
+}
 
 function renderCreateProfil() {
     noTimeout(); // ne pas limiter le temps d’inactivité
