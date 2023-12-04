@@ -241,4 +241,12 @@ class API {
             });
         });
     }
+    static getFormData($form) {
+        const removeTag = new RegExp("(<[a-zA-Z0-9]+>)|(</[a-zA-Z0-9]+>)", "g");
+        var jsonObject = {};
+        $.each($form.serializeArray(), (index, control) => {
+            jsonObject[control.name] = control.value.replace(removeTag, "");
+        });
+        return jsonObject;
+    }
 }
