@@ -17,15 +17,15 @@ function saveContentScrollPosition() {
 function restoreContentScrollPosition() {
     $("#content")[0].scrollTop = contentScrollPosition;
 }
-function UpdateHeader( nom,  fonction) {
+function UpdateHeader( nom,  selected) {
  let loggedUser = API.retrieveLoggedUser();
-    eraseHeader()
+    eraseHeader();
 
     $("#header").append(   
         $(`
         
             <span title="Liste des photos" id="listPhotosCmd">
-                <img src="PhotosManager/images/PhotoCloudLogo.png" class="appLogo">
+                <img src="images/PhotoCloudLogo.png" class="appLogo">
             </span>
             <span class="viewTitle"> ${nom}
        
@@ -52,47 +52,13 @@ function UpdateHeader( nom,  fonction) {
                     <i class="cmdIcon fa fa-ellipsis-vertical"></i>
                 </div>
                 <div class="dropdown-menu noselect">`
-                + ((loggedUser!=null && loggedUser.type==1)?`
+                + ((loggedUser!=null && loggedUser.Authorizations.writeAccess==2)?`
                 <span class="dropdown-item" id="manageUserCm">
                 <i class="menuIcon fas fa-user-cog mx-2"></i>
                 Gestion des usagers
             </span>
-            <div class="dropdown-divider"></div>
-            <span class="dropdown-item" id="logoutCmd">
-                <i class="menuIcon fa fa-sign-out mx-2"></i>
-                Déconnexion
-            </span>
-            <span class="dropdown-item" id="editProfilMenuCmd">
-                <i class="menuIcon fa fa-user-edit mx-2"></i>
-                Modifier votre profil
-            </span>
-            <div class="dropdown-divider"></div>
-            <span class="dropdown-item" id="listPhotosMenuCmd">
-                <i class="menuIcon fa fa-image mx-2"></i>
-                Liste des photos
-            </span>
-            <div class="dropdown-divider"></div>
-            <span class="dropdown-item" id="sortByDateCmd">
-                <i class="menuIcon fa fa-check mx-2"></i>
-                <i class="menuIcon fa fa-calendar mx-2"></i>
-                Photos par date de création
-            </span>
-            <span class="dropdown-item" id="sortByOwnersCmd">
-                <i class="menuIcon fa fa-fw mx-2"></i>
-                <i class="menuIcon fa fa-users mx-2"></i>
-                Photos par créateur
-            </span>
-            <span class="dropdown-item" id="sortByLikesCmd">
-                <i class="menuIcon fa fa-fw mx-2"></i>
-                <i class="menuIcon fa fa-user mx-2"></i>
-                Photos les plus aiméés
-            </span>
-            <span class="dropdown-item" id="ownerOnlyCmd">
-                <i class="menuIcon fa fa-fw mx-2"></i>
-                <i class="menuIcon fa fa-user mx-2"></i>
-                Mes photos
-            </span>`:(loggedUser!=null && loggedUser.type==0)?`
-        <div class="dropdown-divider"></div>
+            <div class="dropdown-divider"></div>`:``)+
+            ((loggedUser!=null)?`
         <span class="dropdown-item" id="logoutCmd">
             <i class="menuIcon fa fa-sign-out mx-2"></i>
             Déconnexion
@@ -126,11 +92,13 @@ function UpdateHeader( nom,  fonction) {
             <i class="menuIcon fa fa-fw mx-2"></i>
             <i class="menuIcon fa fa-user mx-2"></i>
             Mes photos
-        </span>`:`<span class="dropdown-item" id="loginCmd">
+        </span>
+        <script>document.getElementById("logoutCmd").addEventListener("click", deconnection);
+        document.getElementById("editProfilMenuCmd").addEventListener("click", renderProfil);</script>`
+        :`<span class="dropdown-item" id="loginCmd">
         <i class="menuIcon fa fa-sign-out mx-2"></i>
         connection
-    </span>
-                    
+    </span>         
                     
                     `)+`
                     <div class="dropdown-divider"></div>
@@ -146,11 +114,17 @@ function UpdateHeader( nom,  fonction) {
                
              </div>
         </div>
-        <script>document.getElementById("loginCmd").addEventListener("click", renderLogin);</script>
-        <script>document.getElementById("aboutCmd").addEventListener("click", renderAbout);</script>
+        <script>document.getElementById("loginCmd").addEventListener("click", renderLogin);
+        document.getElementById("aboutCmd").addEventListener("click", renderAbout);</script>
         `))
         
 }
+
+function deconnection(){
+    API.eraseLoggedUser();
+    renderLogin();
+}
+
 function renderAbout() {
     timeout();
     saveContentScrollPosition();
@@ -224,28 +198,104 @@ function renderLogin(login = {loginMessage:undefined, Email:undefined, EmailErro
                             renderLogin({loginMessage:"Le serveur ne répond pas"})
                     }
                 }
-                else if(data == "Le serveur ne répond pas"){
-                    renderLogin({loginMessage:data});
-                }
                 else{
-    
+                    renderAbout();
                 }
             });
         });
 
 }
 
-function loadContent(page){
-    switch(page){
-        case "about":
-            renderAbout();
-            break;
-        case "login":
-            renderLogin();
-            break;
-    }
-    
+function renderProfil(){
+    timeout();
+    saveContentScrollPosition();
+    eraseContent();
+    UpdateHeader("Profil", "profil");
+    let loggedUser = API.retrieveLoggedUser();
+    $("#content").append($(`
+    <form class="form" id="editProfilForm"'>
+        <input type="hidden" name="Id" id="Id" value="${loggedUser.Id}"/>
+        <fieldset>
+            <legend>Adresse ce courriel</legend>
+            <input type="email"
+                class="form-control Email"
+                name="Email"
+                id="Email"
+                placeholder="Courriel"
+                required
+                RequireMessage = 'Veuillez entrer votre courriel'
+                InvalidMessage = 'Courriel invalide'
+                CustomErrorMessage ="Ce courriel est déjà utilisé"
+                value="${loggedUser.Email}" >
+            <input class="form-control MatchedInput"
+                type="text"
+                matchedInputId="Email"
+                name="matchedEmail"
+                id="matchedEmail"
+                placeholder="Vérification"
+                required
+                RequireMessage = 'Veuillez entrez de nouveau votre courriel'
+                InvalidMessage="Les courriels ne correspondent pas"
+                value="${loggedUser.Email}" >
+        </fieldset>
+        <fieldset>
+            <legend>Mot de passe</legend>
+            <input type="password"
+                class="form-control"
+                name="Password"
+                id="Password"
+                placeholder="Mot de passe"
+                InvalidMessage = 'Mot de passe trop court' >
+            <input class="form-control MatchedInput"
+                type="password"
+                matchedInputId="Password"
+                name="matchedPassword"
+                id="matchedPassword"
+                placeholder="Vérification"
+                InvalidMessage="Ne correspond pas au mot de passe" >
+        </fieldset>
+        <fieldset>
+            <legend>Nom</legend>
+            <input type="text"
+                class="form-control Alpha"
+                name="Name"
+                id="Name"
+                placeholder="Nom"
+                required
+                RequireMessage = 'Veuillez entrer votre nom'
+                InvalidMessage = 'Nom invalide'
+                value="${loggedUser.Name}" >
+        </fieldset>
+        <fieldset>
+            <legend>Avatar</legend>
+            <div class='imageUploader'
+                newImage='false'
+                controlId='Avatar'
+                imageSrc='${loggedUser.Avatar}'
+                waitingImage="images/Loading_icon.gif">
+            </div>
+        </fieldset>
+        <input type='submit'
+            name='submit'
+            id='saveUserCmd'
+            value="Enregistrer"
+            class="form-control btn-primary">
+    </form>
+    <div class="cancel">
+        <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
+    </div>
+    <div class="cancel"> <hr>
+        <a href="confirmDeleteProfil.php">
+        <button class="form-control btn-warning">Effacer le compte</button>
+        </a>
+    </div>
+    <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);</script>`))
+    $("#loginForm").submit(function(e){
+
+
+    });
 }
+
 
 function renderSingnUp(loginMessage, Email, EmailError, passwordError) {
     timeout();
