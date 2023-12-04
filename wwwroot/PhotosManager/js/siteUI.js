@@ -17,14 +17,14 @@ function saveContentScrollPosition() {
 function restoreContentScrollPosition() {
     $("#content")[0].scrollTop = contentScrollPosition;
 }
-function UpdateHeader( nom,  fonction, loggedUser=null) {
-
+function UpdateHeader( nom,  fonction) {
+ let loggedUser = API.retrieveLoggedUser();
     eraseHeader()
 
     $("#header").append(   
         $(`
         
-            <span title="Liste des photos" id="${fonction}cmd">
+            <span title="Liste des photos" id="listPhotosCmd">
                 <img src="PhotosManager/images/PhotoCloudLogo.png" class="appLogo">
             </span>
             <span class="viewTitle"> ${nom}
@@ -146,6 +146,8 @@ function UpdateHeader( nom,  fonction, loggedUser=null) {
                
              </div>
         </div>
+        <script>document.getElementById("loginCmd").addEventListener("click", renderLogin);</script>
+        <script>document.getElementById("aboutCmd").addEventListener("click", renderAbout);</script>
         `))
         
 }
