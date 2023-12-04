@@ -132,7 +132,7 @@ function UpdateHeader( nom,  fonction, loggedUser=null) {
     </span>
                     
                     
-                    `))+`
+                    `)+`
                     <div class="dropdown-divider"></div>
 
                     <div class="dropdown-item" id="aboutCmd">
