@@ -303,7 +303,7 @@ function renderCreateProfil() {
     UpdateHeader("Inscription", "createProfil"); // mettre à jour l’entête et menu
     $("#newPhotoCmd").hide(); // camouffler l’icone de commande d’ajout de photo
     $("#content").append(`
-    <form class="form" id="createProfilForm"'>
+    <form class="form" id="createProfilForm">
         <fieldset>
             <legend>Adresse ce courriel</legend>
             <input type="email"
@@ -377,11 +377,11 @@ function renderCreateProfil() {
      // call back la soumission du formulaire
     $('#createProfilForm').on("submit",function(event) {
         
-    event.preventDefault();// empêcher le fureteur de soumettre une requête de soumission
+    
     let profil = getFormData($('#createProfilForm'));
     delete profil.matchedPassword;
     delete profil.matchedEmail;
-    
+    event.preventDefault();// empêcher le fureteur de soumettre une requête de soumission
     showWaitingGif(); // afficher GIF d’attente
     createProfil(profil); // commander la création au service API
     });
