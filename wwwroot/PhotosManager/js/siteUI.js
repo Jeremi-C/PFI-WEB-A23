@@ -27,11 +27,10 @@ function UpdateHeader( nom,  selected) {
             <span title="Liste des photos" id="listPhotosCmd">
                 <img src="images/PhotoCloudLogo.png" class="appLogo">
             </span>
-            <span class="viewTitle"> ${nom}
-       
-            
-        `+(nom=="Liste des photos"?`
-            <div class="cmdIcon fa fa-plus" id="newPhotoCmd" title="Ajouter une photo"></div>`:``) + `</span>` +
+            <span class="viewTitle"> ${nom}` + 
+                (nom=="Liste des photos"?`
+                <div class="cmdIcon fa fa-plus" id="newPhotoCmd" title="Ajouter une photo"></div>`:``) +
+            `</span>` +
          (loggedUser==null ?`
             <div class="headerMenusContainer">
                  <span>&nbsp;
@@ -57,7 +56,8 @@ function UpdateHeader( nom,  selected) {
                 <i class="menuIcon fas fa-user-cog mx-2"></i>
                 Gestion des usagers
             </span>
-            <div class="dropdown-divider"></div>`:``)+
+            <div class="dropdown-divider"></div>
+            <script>document.getElementById("manageUserCm").addEventListener("click", renderGestionUsager);</script>`:``)+
             ((loggedUser!=null)?`
         <span class="dropdown-item" id="logoutCmd">
             <i class="menuIcon fa fa-sign-out mx-2"></i>
@@ -94,7 +94,7 @@ function UpdateHeader( nom,  selected) {
             Mes photos
         </span>
         <script>document.getElementById("logoutCmd").addEventListener("click", deconnection);
-        document.getElementById("editProfilMenuCmd").addEventListener("click", renderProfil)
+        document.getElementById("editProfilMenuCmd").addEventListener("click", renderProfil);
         document.getElementById("listPhotosMenuCmd").addEventListener("click", renderImage);
         document.getElementById("editProfilCmd").addEventListener("click", renderProfil);</script>`
         :`<span class="dropdown-item" id="loginCmd">
@@ -421,6 +421,75 @@ function renderCreateProfil() {
     createProfil(profil); // commander la création au service API
     });
 }
+
+function renderGestionUsager(){
+    timeout();
+    saveContentScrollPosition();
+    eraseContent();
+    UpdateHeader("Gestion des usagers", "");
+    API.GetAccounts().then((data) => {
+        console.log(data);
+        data.data.forEach(user => {
+            renderUsager(user, true);
+        });
+    });
+}
+
+function renderUsager(data, button = false){
+    $("#content").append(`
+    <div class="UserContainer">
+        <div class="UserRow">
+            <div class="UserAvatarSmall"
+            style="background-image:url('${data.Avatar}')"
+            title="'${data.Name}'"></div>
+            <div>
+                <h3>${data.Name}</h3>
+                <a>${data.Email}</a>
+            </div>
+        </div>` +
+        (button?
+        `<div class="UserCommandPanel">` +
+            (data.Authorizations.readAccess==2?` 
+            <span id="@controlId" 
+            class="fas fa-user-cog dodgerblueCmd"
+            title="@TooltipMessage"
+            data-placement="@ToolTipPlacement"
+            style="color: @color;"
+            param=@param> <!--Admin-->
+            </span>`:`
+            <span id="@controlId" 
+            class="fas fa-user-alt dodgerblueCmd"
+            title="@TooltipMessage"
+            data-placement="@ToolTipPlacement"
+            style="color: @color;"
+            param=@param> <!--non-Admin-->
+            </span>`) +
+            (data.VerifyCode=="blocked"?`
+            <span id="@controlId" 
+            class="fa fa-ban redCmd"
+            title="@TooltipMessage"
+            data-placement="@ToolTipPlacement"
+            style="color: @color;"
+            param=@param> <!--blocked user-->
+            </span>`:`
+            <span id="@controlId" 
+            class="fa-regular fa-circle greenCmd"
+            title="@TooltipMessage"
+            data-placement="@ToolTipPlacement"
+            style="color: @color;"
+            param=@param> <!--non-blocked user-->
+            </span>`) + 
+            `<span id="@controlId" 
+            class="fas fa-user-slash goldenrodCmd"
+            title="@TooltipMessage"
+            data-placement="@ToolTipPlacement"
+            style="color: @color;"
+            param=@param> <!--erase user-->
+            </span>
+        </div>`:``) + 
+    `</div>`);
+}
+
 
 function renderImage(param = {sort:undefined}){
     timeout();
