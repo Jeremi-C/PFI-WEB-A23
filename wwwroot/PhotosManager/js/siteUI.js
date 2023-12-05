@@ -94,7 +94,8 @@ function UpdateHeader( nom,  selected) {
             Mes photos
         </span>
         <script>document.getElementById("logoutCmd").addEventListener("click", deconnection);
-        document.getElementById("editProfilMenuCmd").addEventListener("click", renderProfil);</script>`
+        document.getElementById("editProfilMenuCmd").addEventListener("click", renderProfil);
+        document.getElementById("editProfilCmd").addEventListener("click", renderProfil);</script>`
         :`<span class="dropdown-item" id="loginCmd">
         <i class="menuIcon fa fa-sign-out mx-2"></i>
         connection
@@ -156,7 +157,7 @@ function renderLogin(login = {loginMessage:undefined, Email:undefined, EmailErro
     UpdateHeader("Connection", "login");
     $("#content").append($(`
         <div class="content" style="text-align:center">` +
-            (login.loginMessage!=undefined?`<h3>${login.loginMessage}</h3>`:``) +
+            (login.loginMessage!=undefined?`<h3 class="errorContainer">${login.loginMessage}</h3>`:``) +
             `<form class="form" id="loginForm">
                 <input type='email'
                     name='Email'
@@ -206,14 +207,15 @@ function renderLogin(login = {loginMessage:undefined, Email:undefined, EmailErro
 
 }
 
-function renderProfil(){
+function renderProfil(message = {error:undefined}){
     timeout();
     saveContentScrollPosition();
     eraseContent();
     UpdateHeader("Profil", "profil");
     let loggedUser = API.retrieveLoggedUser();
-    $("#content").append($(`
-    <form class="form" id="editProfilForm"'>
+    $("#content").append($(
+    (message.error!=undefined?`<h3 class="errorContainer">${message.error}<h3>`:``)+`
+    <form class="form" id="editProfilForm">
         <input type="hidden" name="Id" id="Id" value="${loggedUser.Id}"/>
         <fieldset>
             <legend>Adresse ce courriel</legend>
@@ -289,10 +291,31 @@ function renderProfil(){
         <button class="form-control btn-warning">Effacer le compte</button>
         </a>
     </div>
-    <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);</script>`))
-    $("#loginForm").submit(function(e){
-
-
+    <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);
+    document.getElementById("eraseAccount").addEventListener("click", renderDeleteProfil);</script>`));
+    initFormValidation();
+    initImageUploaders();
+    addConflictValidation(API.checkConflictURL(), 'Email', 'saveUser');
+    $("#editProfilForm").submit(function(e){
+        e.preventDefault();
+        let profil = getFormData($('#editProfilForm'));
+        if(profil.matchedPassword != profil.Password){
+            renderProfil({error:"Les deux mots de passe doit être pareil"});
+        }
+        else{
+            delete profil.matchedPassword;
+            delete profil.matchedEmail;
+            API.modifyUserProfil(profil).then((data) =>{
+                if(data == false){
+                    console.log("fail");
+                    renderProfil({error:API.currentHttpError})
+                }
+                else{
+                    console.log("success");
+                    renderProfil();
+                }
+            });
+        }
     });
 }
 
@@ -386,8 +409,17 @@ function renderCreateProfil() {
     createProfil(profil); // commander la création au service API
     });
     }
-
     
+    function getFormData($form) {
+        const removeTag = new RegExp("(<[a-zA-Z0-9]+>)|(</[a-zA-Z0-9]+>)", "g");
+        var jsonObject = {};
+        $.each($form.serializeArray(), (index, control) => {
+            jsonObject[control.name] = control.value.replace(removeTag, "");
+        });
+        return jsonObject;
+    }
+
+
 
     function createProfil(profil){
         API.register(profil);
