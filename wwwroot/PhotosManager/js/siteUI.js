@@ -319,6 +319,34 @@ function renderProfil(message = {error:undefined}){
     });
 }
 
+function renderDeleteProfil(){
+    timeout();
+    saveContentScrollPosition();
+    eraseContent();
+    UpdateHeader("Retrait de compte", "");
+    $("#content").append(`
+    <div class="aboutContainer">
+        <h1>Voulez-vous vraiment effacer votre compte?</h1>
+        <div class="cancel" style="margin-top:20px">
+            <button class="form-control btn-danger" id="eraseAccount">Effacer mon compte</button>
+        </div>
+        <div class="cancel" style="margin-top:20px">
+            <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
+        </div>
+    </div>
+    <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);
+    document.getElementById("eraseAccount").addEventListener("click", deleteProfil);</script>`);
+}
+
+function deleteProfil(){
+    console.log(API.retrieveLoggedUser());
+    API.unsubscribeAccount(API.retrieveLoggedUser().Id).then((data) =>
+    {
+        if(data)deconnection();
+        else renderProfil();
+    });
+}
+
 
 function renderCreateProfil() {
     noTimeout(); // ne pas limiter le temps d’inactivité
@@ -408,21 +436,21 @@ function renderCreateProfil() {
     showWaitingGif(); // afficher GIF d’attente
     createProfil(profil); // commander la création au service API
     });
-    }
+}
     
-    function getFormData($form) {
-        const removeTag = new RegExp("(<[a-zA-Z0-9]+>)|(</[a-zA-Z0-9]+>)", "g");
-        var jsonObject = {};
-        $.each($form.serializeArray(), (index, control) => {
-            jsonObject[control.name] = control.value.replace(removeTag, "");
-        });
-        return jsonObject;
-    }
+function getFormData($form) {
+    const removeTag = new RegExp("(<[a-zA-Z0-9]+>)|(</[a-zA-Z0-9]+>)", "g");
+    var jsonObject = {};
+    $.each($form.serializeArray(), (index, control) => {
+        jsonObject[control.name] = control.value.replace(removeTag, "");
+    });
+    return jsonObject;
+}
 
 
 
-    function createProfil(profil){
-        API.register(profil);
-        renderLogin({loginMessage:"Votre compte a été créé. Veuillez prendre vos courriels pour reccupérer votre code de vérification qui vous sera demandé lors de votre prochaine connexion"});
+function createProfil(profil){
+    API.register(profil);
+    renderLogin({loginMessage:"Votre compte a été créé. Veuillez prendre vos courriels pour reccupérer votre code de vérification qui vous sera demandé lors de votre prochaine connexion"});
 
-    }
+}
