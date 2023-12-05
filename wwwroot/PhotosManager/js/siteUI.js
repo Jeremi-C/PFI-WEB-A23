@@ -29,9 +29,9 @@ function UpdateHeader( nom,  selected) {
             </span>
             <span class="viewTitle"> ${nom}
        
-            </span>
+            
         `+(nom=="Liste des photos"?`
-            <div class="cmdIcon fa fa-plus" id="newPhotoCmd" title="Ajouter une photo"></div>`:``) +
+            <div class="cmdIcon fa fa-plus" id="newPhotoCmd" title="Ajouter une photo"></div>`:``) + `</span>` +
          (loggedUser==null ?`
             <div class="headerMenusContainer">
                  <span>&nbsp;
@@ -94,7 +94,8 @@ function UpdateHeader( nom,  selected) {
             Mes photos
         </span>
         <script>document.getElementById("logoutCmd").addEventListener("click", deconnection);
-        document.getElementById("editProfilMenuCmd").addEventListener("click", renderProfil);
+        document.getElementById("editProfilMenuCmd").addEventListener("click", renderProfil)
+        document.getElementById("listPhotosMenuCmd").addEventListener("click", renderImage);
         document.getElementById("editProfilCmd").addEventListener("click", renderProfil);</script>`
         :`<span class="dropdown-item" id="loginCmd">
         <i class="menuIcon fa fa-sign-out mx-2"></i>
@@ -119,11 +120,6 @@ function UpdateHeader( nom,  selected) {
         <script>document.getElementById("aboutCmd").addEventListener("click", renderAbout);</script>
         `))
         
-}
-
-function deconnection(){
-    API.eraseLoggedUser();
-    renderLogin();
 }
 
 function renderAbout() {
@@ -200,7 +196,7 @@ function renderLogin(login = {loginMessage:undefined, Email:undefined, EmailErro
                     }
                 }
                 else{
-                    renderAbout();
+                    renderImage();
                 }
             });
         });
@@ -287,11 +283,9 @@ function renderProfil(message = {error:undefined}){
         <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
     </div>
     <div class="cancel"> <hr>
-        <a href="confirmDeleteProfil.php">
-        <button class="form-control btn-warning">Effacer le compte</button>
-        </a>
+        <button class="form-control btn-warning" id="eraseAccount">Effacer le compte</button>
     </div>
-    <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);
+    <script>document.getElementById("abortCmd").addEventListener("click", renderImage);
     document.getElementById("eraseAccount").addEventListener("click", renderDeleteProfil);</script>`));
     initFormValidation();
     initImageUploaders();
@@ -312,7 +306,7 @@ function renderProfil(message = {error:undefined}){
                 }
                 else{
                     console.log("success");
-                    renderProfil();
+                    renderImage();
                 }
             });
         }
@@ -337,16 +331,6 @@ function renderDeleteProfil(){
     <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);
     document.getElementById("eraseAccount").addEventListener("click", deleteProfil);</script>`);
 }
-
-function deleteProfil(){
-    console.log(API.retrieveLoggedUser());
-    API.unsubscribeAccount(API.retrieveLoggedUser().Id).then((data) =>
-    {
-        if(data)deconnection();
-        else renderProfil();
-    });
-}
-
 
 function renderCreateProfil() {
     noTimeout(); // ne pas limiter le temps d’inactivité
@@ -437,20 +421,10 @@ function renderCreateProfil() {
     createProfil(profil); // commander la création au service API
     });
 }
-    
-function getFormData($form) {
-    const removeTag = new RegExp("(<[a-zA-Z0-9]+>)|(</[a-zA-Z0-9]+>)", "g");
-    var jsonObject = {};
-    $.each($form.serializeArray(), (index, control) => {
-        jsonObject[control.name] = control.value.replace(removeTag, "");
-    });
-    return jsonObject;
-}
 
-
-
-function createProfil(profil){
-    API.register(profil);
-    renderLogin({loginMessage:"Votre compte a été créé. Veuillez prendre vos courriels pour reccupérer votre code de vérification qui vous sera demandé lors de votre prochaine connexion"});
-
+function renderImage(param = {sort:undefined}){
+    timeout();
+    saveContentScrollPosition();
+    eraseContent();
+    UpdateHeader("Liste des photos", "");
 }
