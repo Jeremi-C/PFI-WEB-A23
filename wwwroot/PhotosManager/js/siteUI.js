@@ -313,11 +313,21 @@ function renderProfil(message = {error:undefined}){
     });
 }
 
-function renderDeleteProfil(){
+let users;
+
+function renderDeleteProfil(id = null){
     timeout();
     saveContentScrollPosition();
     eraseContent();
     UpdateHeader("Retrait de compte", "");
+    if(id != null){
+        API.GetAccounts().then((data) => {
+            users = data.data;
+            for(i = 0; i < users.length; i++){
+                renderUsager(users[i], true);
+            }
+        });
+    }
     $("#content").append(`
     <div class="aboutContainer">
         <h1>Voulez-vous vraiment effacer votre compte?</h1>
@@ -422,13 +432,13 @@ function renderCreateProfil() {
     });
 }
 
-function renderGestionUsager(){
+function renderGestionUsager(data = {message:undefined}){
     timeout();
     saveContentScrollPosition();
     eraseContent();
     UpdateHeader("Gestion des usagers", "");
+    $("#content").append(data.message!=undefined?`<h3 class="errorContainer">${data.message}<h3>`:``)
     API.GetAccounts().then((data) => {
-        console.log(data);
         data.data.forEach(user => {
             renderUsager(user, true);
         });

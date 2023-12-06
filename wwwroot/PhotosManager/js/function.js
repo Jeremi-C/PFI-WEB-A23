@@ -3,14 +3,23 @@ function deconnection(message = undefined){
     renderLogin({loginMessage:message});
 }
 
-async function deleteProfil() {
-    let loggedUser = API.retrieveLoggedUser();
-    if (loggedUser) {
-        if (await API.unsubscribeAccount(loggedUser.Id)) {
-            deconnection("Votre compte a été effacé.")
+async function deleteProfil(id=null) {
+    if(id==null){
+        let loggedUser = API.retrieveLoggedUser();
+        if (loggedUser) {
+            if (await API.unsubscribeAccount(loggedUser.Id)) {
+                deconnection("Votre compte a été effacé.")
+            } else
+                renderProfil({error:"Un problème est survenu."});
+        }
+    }
+    else{
+        if (await API.unsubscribeAccount(id)) {
+            renderUsager();
         } else
-            renderProfil({error:"Un problème est survenu."});
-    }//renderUsager();
+            renderUsager({message:"Un problème est survenu."});
+    }
+    //renderUsager();
 }
 
 function getFormData($form) {
