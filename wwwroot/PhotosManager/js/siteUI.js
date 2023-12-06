@@ -415,28 +415,38 @@ function renderCreateProfil() {
     addConflictValidation(API.checkConflictURL(), 'Email', 'saveUser');
      // call back la soumission du formulaire
     $('#createProfilForm').submit(function(event) {
-    event.preventDefault();
-    console.log("yes");
-    let profil = API.getFormData($('#createProfilForm'));
-    delete profil.matchedPassword;
-    delete profil.matchedEmail;
-   // event.preventDefault();// empêcher le fureteur de soumettre une requête de soumission
-    showWaitingGif(); // afficher GIF d’attente
-    createProfil(profil); // commander la création au service API
+        event.preventDefault();
+        console.log("yes");
+        let profil = API.getFormData($('#createProfilForm'));
+        delete profil.matchedPassword;
+        delete profil.matchedEmail;
+    // event.preventDefault();// empêcher le fureteur de soumettre une requête de soumission
+        showWaitingGif(); // afficher GIF d’attente
+        createProfil(profil); // commander la création au service API
+
     });
 }
 
-function renderGestionUsager(){
+function renderVerification(){
+
+}
+
+let users;
+
+function renderGestionUsager(data = {message:undefined}){
     timeout();
     saveContentScrollPosition();
     eraseContent();
     UpdateHeader("Gestion des usagers", "");
-    API.GetAccounts().then((data) => {
-        console.log(data);
-        data.data.forEach(user => {
-            renderUsager(user, true);
+    $("#content").append(data.message!=undefined?`<h3 class="errorContainer">${data.message}<h3>`:``)
+    if(id != null){
+        API.GetAccounts().then((data) => {
+            users = data.data;
+            for(i = 0; i < users.length; i++){
+                renderUsager(users[i], true, i);
+            }
         });
-    });
+    }
 }
 
 function renderUsager(data, button = false){
