@@ -439,17 +439,17 @@ function renderGestionUsager(data = {message:undefined}){
     eraseContent();
     UpdateHeader("Gestion des usagers", "");
     $("#content").append(data.message!=undefined?`<h3 class="errorContainer">${data.message}<h3>`:``)
-    if(id != null){
+   
         API.GetAccounts().then((data) => {
             users = data.data;
             for(i = 0; i < users.length; i++){
                 renderUsager(users[i], true, i);
             }
         });
-    }
+    
 }
 
-function renderUsager(data, button = false){
+function renderUsager(data, button = false,i=null){
     $("#content").append(`
     <div class="UserContainer">
         <div class="UserRow">
@@ -465,14 +465,13 @@ function renderUsager(data, button = false){
         (button?
         `<div class="UserCommandPanel">` +
             (data.Authorizations.readAccess==2?` 
-            <span id="downgrade${data.Id}" 
-            class="fas fa-user-cog dodgerblueCmd"
-            title="@TooltipMessage"
-            data-placement="@ToolTipPlacement"
-            style="color: @color;"
-            param=@param> <!--Admin-->
-            </span>`:
-            `<span id="upgrade${data.Id}" 
+            
+            <span  id="downgrade${i}">
+                <i class="fas fa-user-cog dodgerblueCmd"></i>
+                
+            </span>
+            `:
+            `<span id="upgrade${i}" 
             class="fas fa-user-alt dodgerblueCmd"
             title="@TooltipMessage"
             data-placement="@ToolTipPlacement"
@@ -480,21 +479,21 @@ function renderUsager(data, button = false){
             param=@param> <!--non-Admin-->
             </span>`) +
             (data.VerifyCode=="blocked"?`
-            <span id="Unblock${data.Id}" 
+            <span id="Unblock${i}" 
             class="fa fa-ban redCmd"
             title="@TooltipMessage"
             data-placement="@ToolTipPlacement"
             style="color: @color;"
             param=@param> <!--blocked user-->
             </span>`:`
-            <span id="Block${data.Id}" 
+            <span id="Block${i}" 
             class="fa-regular fa-circle greenCmd"
             title="@TooltipMessage"
             data-placement="@ToolTipPlacement"
             style="color: @color;"
             param=@param> <!--non-blocked user-->
             </span>`) + 
-            `<span id="erase${data.Id}" 
+            `<span id="erase${i}" 
             class="fas fa-user-slash goldenrodCmd"
             title="@TooltipMessage"
             data-placement="@ToolTipPlacement"
@@ -503,12 +502,12 @@ function renderUsager(data, button = false){
             </span>
         </div>`:``) + 
     `</div>
-    <script>document.getElementById("downgrade${data.Id}").addEventListener("click", renderabout);
-   document.getElementById("upgrade${data.Id}").addEventListener("click", renderProfil);
-    document.getElementById("Unblock${data.Id}").addEventListener("click", renderProfil);
-   document.getElementById("Unblock${data.Id}").addEventListener("click", renderProfil);
-   document.getElementById("Block${data.Id}").addEventListener("click", renderProfil);
-    document.getElementById("erase${data.Id}").addEventListener("click", renderProfil);</script>
+    <script>document.getElementById("downgrade${i}").addEventListener("click", renderabout);
+   document.getElementById("upgrade${i}").addEventListener("click", API.GetAccounts());
+    document.getElementById("Block${i}").addEventListener("click", renderProfil);
+   document.getElementById("Unblock${i}").addEventListener("click", renderProfil);
+   document.getElementById("Block${i}").addEventListener("click", renderProfil);
+    document.getElementById("erase${i}").addEventListener("click", renderProfil);</script>
     `);
 }
 
