@@ -5,10 +5,12 @@ import * as utilities from "../utilities.js";
 import Gmail from "../gmail.js";
 import Controller from './Controller.js';
 import Authorizations from '../authorizations.js';
+import TokenModel from '../models/token.js'
 
 export default class AccountsController extends Controller {
     constructor(HttpContext) {
         super(HttpContext, new Repository(new UserModel()), Authorizations.admin());
+        this.tokensRepository = new Repository(new TokenModel());
     }
     index(id) {
         if (id != undefined) {

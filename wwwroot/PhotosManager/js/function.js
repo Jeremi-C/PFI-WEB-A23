@@ -1,14 +1,16 @@
-function deconnection(){
+function deconnection(message = undefined){
     API.eraseLoggedUser();
-    renderLogin();
+    renderLogin({loginMessage:message});
 }
 
-function deleteProfil(){
-    API.unsubscribeAccount(API.retrieveLoggedUser().Id).then((data) =>
-    {
-        if(data)deconnection();
-        else renderProfil();
-    });
+async function deleteProfil() {
+    let loggedUser = API.retrieveLoggedUser();
+    if (loggedUser) {
+        if (await API.unsubscribeAccount(loggedUser.Id)) {
+            deconnection("Votre compte a été effacé.")
+        } else
+            renderProfil({error:"Un problème est survenu."});
+    }//renderUsager();
 }
 
 function getFormData($form) {

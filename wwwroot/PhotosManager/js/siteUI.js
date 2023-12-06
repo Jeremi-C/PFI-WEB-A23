@@ -456,8 +456,8 @@ function renderUsager(data, button = false){
             data-placement="@ToolTipPlacement"
             style="color: @color;"
             param=@param> <!--Admin-->
-            </span>`:`
-            <span id="@controlId" 
+            </span>`:
+            `<span id="@controlId" 
             class="fas fa-user-alt dodgerblueCmd"
             title="@TooltipMessage"
             data-placement="@ToolTipPlacement"
