@@ -1,1 +1,54 @@
-[{"Id":"17988070-7f22-11ee-b433-0bad428eeaac","Email":"Nicolas.Chourot@clg.qc.ca","Password":"password","Name":"Nicolas Chourot","Avatar":"f5795080-4468-11ee-8281-2f600646bb7f.jpeg","Created":1699734739,"Authorizations":{"readAccess":1,"writeAccess":1},"VerifyCode":"verified"},{"Id":"13d91630-818d-11ee-b89b-c91bf460b1a8","Email":"Saliha.Yacoub@clg.qc.ca","Password":"password","Name":"Saliha Yacoub","Avatar":"13d91631-818d-11ee-b89b-c91bf460b1a8.jpeg","Created":1700057920,"Authorizations":{"readAccess":2,"writeAccess":2},"VerifyCode":"verified"},{"Id":"aaadd640-92d6-11ee-ba52-1988680abdcb","Email":"hugogravel2001@gmail.com","Password":"wizzo11","Name":"wizzo","Avatar":"aaadfd50-92d6-11ee-ba52-1988680abdcb.png","Created":1701716118,"VerifyCode":766470,"Authorizations":{"readAccess":1,"writeAccess":1}},{"Id":"5255e950-92d7-11ee-bbf8-2b0b3420774e","Email":"punkintrick@gmail.com","Password":"trickster","Name":"wiz","Avatar":"52561060-92d7-11ee-bbf8-2b0b3420774e.png","Created":1701716399,"VerifyCode":85902,"Authorizations":{"readAccess":1,"writeAccess":1}}]
+[
+    {
+        "Id": "17988070-7f22-11ee-b433-0bad428eeaac",
+        "Email": "Nicolas.Chourot@clg.qc.ca",
+        "Password": "password",
+        "Name": "Nicolas Chourot",
+        "Avatar": "f5795080-4468-11ee-8281-2f600646bb7f.jpeg",
+        "Created": 1699734739,
+        "Authorizations": {
+            "readAccess": 1,
+            "writeAccess": 1
+        },
+        "VerifyCode": "verified"
+    },
+    {
+        "Id": "13d91630-818d-11ee-b89b-c91bf460b1a8",
+        "Email": "Saliha.Yacoub@clg.qc.ca",
+        "Password": "password",
+        "Name": "Saliha Yacoub",
+        "Avatar": "13d91631-818d-11ee-b89b-c91bf460b1a8.jpeg",
+        "Created": 1700057920,
+        "Authorizations": {
+            "readAccess": 2,
+            "writeAccess": 2
+        },
+        "VerifyCode": "verified"
+    },
+    {
+        "Id": "aaadd640-92d6-11ee-ba52-1988680abdcb",
+        "Email": "hugogravel2001@gmail.com",
+        "Password": "wizzo11",
+        "Name": "wizzo",
+        "Avatar": "aaadfd50-92d6-11ee-ba52-1988680abdcb.png",
+        "Created": 1701716118,
+        "Authorizations": {
+            "readAccess": 2,
+            "writeAccess": 2
+        },
+        "VerifyCode": "verified"
+    },
+    {
+        "Id": "5255e950-92d7-11ee-bbf8-2b0b3420774e",
+        "Email": "punkintrick@gmail.com",
+        "Password": "trickster",
+        "Name": "wiz",
+        "Avatar": "52561060-92d7-11ee-bbf8-2b0b3420774e.png",
+        "Created": 1701716399,
+        "VerifyCode": 85902,
+        "Authorizations": {
+            "readAccess": 1,
+            "writeAccess": 1
+        }
+    }
+]

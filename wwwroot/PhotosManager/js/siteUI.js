@@ -19,11 +19,12 @@ function restoreContentScrollPosition() {
 }
 function UpdateHeader( nom,  selected) {
  let loggedUser = API.retrieveLoggedUser();
+ console.log(loggedUser);
     eraseHeader();
 
     $("#header").append(   
         $(`
-        
+            
             <span title="Liste des photos" id="listPhotosCmd">
                 <img src="images/PhotoCloudLogo.png" class="appLogo">
             </span>
@@ -117,12 +118,14 @@ function UpdateHeader( nom,  selected) {
                
              </div>
         </div>
+       
         <script>document.getElementById("aboutCmd").addEventListener("click", renderAbout);</script>
         `))
         
 }
 
 function renderAbout() {
+  
     timeout();
     saveContentScrollPosition();
     eraseContent();
@@ -144,6 +147,7 @@ function renderAbout() {
                     Collège Lionel-Groulx, automne 2023
                 </p>
             </div>
+         
         `))
 }
 function renderLogin(login = {loginMessage:undefined, Email:undefined, EmailError:undefined, passwordError:undefined}) {
@@ -313,28 +317,23 @@ function renderProfil(message = {error:undefined}){
     });
 }
 
-function renderDeleteProfil(profil = null){
+function renderDeleteProfil(){
     timeout();
     saveContentScrollPosition();
     eraseContent();
     UpdateHeader("Retrait de compte", "");
     $("#content").append(`
-    <div class="aboutContainer">` +
-        (profil==null?`<h1>Voulez-vous vraiment effacer votre compte?</h1>`:
-        `<h1>Voulez-vous vraiment effacer cet usager et toutes ses photo?</h1>`));
-
-        if(profil!=null)renderUsager(profil);
-
-        $("#content").append(
-        `<div class="cancel" style="margin-top:20px">
+    <div class="aboutContainer">
+        <h1>Voulez-vous vraiment effacer votre compte?</h1>
+        <div class="cancel" style="margin-top:20px">
             <button class="form-control btn-danger" id="eraseAccount">Effacer mon compte</button>
         </div>
         <div class="cancel" style="margin-top:20px">
             <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
         </div>
     </div>
-    <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);</script>`);
-    document.getElementById("eraseAccount").addEventListener("click", deleteProfil(profil));
+    <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);
+    document.getElementById("eraseAccount").addEventListener("click", deleteProfil);</script>`);
 }
 
 function renderCreateProfil() {
@@ -427,25 +426,20 @@ function renderCreateProfil() {
     });
 }
 
-let users;
-
-function renderGestionUsager(data = {message:undefined}){
+function renderGestionUsager(){
     timeout();
     saveContentScrollPosition();
     eraseContent();
     UpdateHeader("Gestion des usagers", "");
-    $("#content").append(data.message!=undefined?`<h3 class="errorContainer">${data.message}<h3>`:``)
-    if(id != null){
-        API.GetAccounts().then((data) => {
-            users = data.data;
-            for(i = 0; i < users.length; i++){
-                renderUsager(users[i], true, i);
-            }
+    API.GetAccounts().then((data) => {
+        console.log(data);
+        data.data.forEach(user => {
+            renderUsager(user, true);
         });
-    }
+    });
 }
 
-function renderUsager(data, button = false, i = null){
+function renderUsager(data, button = false){
     $("#content").append(`
     <div class="UserContainer">
         <div class="UserRow">
@@ -455,19 +449,20 @@ function renderUsager(data, button = false, i = null){
             <div>
                 <h3>${data.Name}</h3>
                 <a>${data.Email}</a>
+                
             </div>
         </div>` +
         (button?
         `<div class="UserCommandPanel">` +
             (data.Authorizations.readAccess==2?` 
-            <span id="@controlId" 
+            <span id="downgrade${data.Id}" 
             class="fas fa-user-cog dodgerblueCmd"
             title="@TooltipMessage"
             data-placement="@ToolTipPlacement"
             style="color: @color;"
             param=@param> <!--Admin-->
             </span>`:
-            `<span id="@controlId" 
+            `<span id="upgrade${data.Id}" 
             class="fas fa-user-alt dodgerblueCmd"
             title="@TooltipMessage"
             data-placement="@ToolTipPlacement"
@@ -475,21 +470,21 @@ function renderUsager(data, button = false, i = null){
             param=@param> <!--non-Admin-->
             </span>`) +
             (data.VerifyCode=="blocked"?`
-            <span id="@controlId" 
+            <span id="Unblock${data.Id}" 
             class="fa fa-ban redCmd"
             title="@TooltipMessage"
             data-placement="@ToolTipPlacement"
             style="color: @color;"
             param=@param> <!--blocked user-->
             </span>`:`
-            <span id="@controlId" 
+            <span id="Block${data.Id}" 
             class="fa-regular fa-circle greenCmd"
             title="@TooltipMessage"
             data-placement="@ToolTipPlacement"
             style="color: @color;"
             param=@param> <!--non-blocked user-->
             </span>`) + 
-            `<span id="@controlId" 
+            `<span id="erase${data.Id}" 
             class="fas fa-user-slash goldenrodCmd"
             title="@TooltipMessage"
             data-placement="@ToolTipPlacement"
@@ -497,7 +492,14 @@ function renderUsager(data, button = false, i = null){
             param=@param> <!--erase user-->
             </span>
         </div>`:``) + 
-    `</div>`);
+    `</div>
+    <script>document.getElementById("downgrade${data.Id}").addEventListener("click", renderabout);
+   document.getElementById("upgrade${data.Id}").addEventListener("click", renderProfil);
+    document.getElementById("Unblock${data.Id}").addEventListener("click", renderProfil);
+   document.getElementById("Unblock${data.Id}").addEventListener("click", renderProfil);
+   document.getElementById("Block${data.Id}").addEventListener("click", renderProfil);
+    document.getElementById("erase${data.Id}").addEventListener("click", renderProfil);</script>
+    `);
 }
 
 
