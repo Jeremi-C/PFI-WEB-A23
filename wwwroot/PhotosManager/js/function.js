@@ -3,8 +3,8 @@ function deconnection(message = undefined){
     renderLogin({loginMessage:message});
 }
 
-async function deleteProfil(id=null) {
-    if(id==null){
+async function deleteProfil(profil) {
+    if(profil==null){
         let loggedUser = API.retrieveLoggedUser();
         if (loggedUser) {
             if (await API.unsubscribeAccount(loggedUser.Id)) {
@@ -14,7 +14,7 @@ async function deleteProfil(id=null) {
         }
     }
     else{
-        if (await API.unsubscribeAccount(id)) {
+        if (await API.unsubscribeAccount(profil.Id)) {
             renderUsager();
         } else
             renderUsager({message:"Un problème est survenu."});

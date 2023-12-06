@@ -319,17 +319,22 @@ function renderDeleteProfil(profil = null){
     eraseContent();
     UpdateHeader("Retrait de compte", "");
     $("#content").append(`
-    <div class="aboutContainer">
-        <h1>Voulez-vous vraiment effacer votre compte?</h1>
-        <div class="cancel" style="margin-top:20px">
+    <div class="aboutContainer">` +
+        (profil==null?`<h1>Voulez-vous vraiment effacer votre compte?</h1>`:
+        `<h1>Voulez-vous vraiment effacer cet usager et toutes ses photo?</h1>`));
+
+        if(profil!=null)renderUsager(profil);
+
+        $("#content").append(
+        `<div class="cancel" style="margin-top:20px">
             <button class="form-control btn-danger" id="eraseAccount">Effacer mon compte</button>
         </div>
         <div class="cancel" style="margin-top:20px">
             <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
         </div>
     </div>
-    <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);
-    document.getElementById("eraseAccount").addEventListener("click", deleteProfil);</script>`);
+    <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);</script>`);
+    document.getElementById("eraseAccount").addEventListener("click", deleteProfil(profil));
 }
 
 function renderCreateProfil() {
