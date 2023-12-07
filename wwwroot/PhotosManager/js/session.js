@@ -15,12 +15,12 @@ function createTimeoutPopup() {
 let currentTimeouID = undefined;
 let initialized = false;
 let timeBeforeRedirect = 5;
-let timeoutCallBack = () => {};
+let timeoutCallBack = () => {deconnection("Votre connetion a expiré")};
 let infinite = -1;
-let timeLeft = infinite;
+let timeLeft = 60;
 let maxStallingTime = infinite;
 
-function initTimeout(stallingTime = infinite, callback = timeoutCallBack) {
+function initTimeout(stallingTime = 60, callback = timeoutCallBack) {
     maxStallingTime = stallingTime;
     timeoutCallBack = callback;
     createTimeoutPopup();

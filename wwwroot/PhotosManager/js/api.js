@@ -240,6 +240,18 @@ class API {
             });
         });
     }
+    static DeleteToken(id) {
+        API.initHttpState();
+        return new Promise(resolve => {
+            $.ajax({
+                url: serverHost + "/token/" + id,
+                type: 'DELETE',
+                headers: API.getBearerAuthorizationToken(),
+                success: () => { resolve(true) },
+                error: xhr => { API.setHttpErrorState(xhr); resolve(false); }
+            });
+        });
+    }
     static getFormData($form) {
         const removeTag = new RegExp("(<[a-zA-Z0-9]+>)|(</[a-zA-Z0-9]+>)", "g");
         var jsonObject = {};

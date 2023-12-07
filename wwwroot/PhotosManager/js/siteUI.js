@@ -439,43 +439,29 @@ function renderCreateProfil(message = {error:undefined}) {
     });
 }
 
-function renderVerification(){
+function renderVerification(message = {error:undefined}){
     saveContentScrollPosition();
     eraseContent();
     UpdateHeader("Vérification", "");
     $("#content").append($(`
-    <h1>Veuillez entrer le code de vérification que vous avez reçu par courriel</h1>
-    <div class="content" style="text-align:center">
-        <form class="form" id="loginForm">
-            <input type='email'
-                name='Email'
+    <div class="content" style="text-align:center">` + 
+        (message.error==undefined?`<h3>Veuillez entrer le code de vérification que vous avez reçu par courriel</h3>`:
+        `<h3 class="errorContainer">${message.error}<h3>`) + 
+        `<form class="form" id="codeForm">
+            <input type='code'
+                name='code'
                 class="form-control"
                 required
-                RequireMessage = 'Veuillez entrer votre courriel'
-                InvalidMessage = 'Courriel invalide'
-                placeholder="adresse de courriel"
+                RequireMessage="Veuillez entrer votre code"
+                placeholder="code">
             <input type='submit' name='submit' value="Entrer" class="form-control btn-primary">
         </form>
-        <div class="form">
-            <hr>
-            <button class="form-control btn-info" id="createProfilCmd">Nouveau compte</button>
-        </div>
-    </div>
-    <script>document.getElementById("createProfilCmd").addEventListener("click", renderCreateProfil);</script>`));
-    $("#loginForm").submit(function(e){
+    </div>`));
+    $("#codeForm").submit(function(e){
         e.preventDefault();
-        API.login($("input[name=Email]").val(), $("input[name=Password]").val()).then((data)=>{
+        API.verifyEmail(API.retrieveLoggedUser().Id, $("input[name=code]").val()).then((data)=>{
             if(data == false){
-                switch(API.currentStatus){
-                    case 481:
-                        renderLogin({EmailError:API.currentHttpError})
-                        break;
-                    case 482:
-                        renderLogin({passwordError:API.currentHttpError})
-                        break;
-                    default:
-                        renderLogin({loginMessage:"Le serveur ne répond pas"})
-                }
+                renderVerification({error:"Ceci n'est pas le bon code"})
             }
             else{
                 renderImage();
