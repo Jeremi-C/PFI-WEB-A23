@@ -182,7 +182,7 @@ export default class AccountsController extends Controller {
                         user.Password = foundedUser.Password;
                     }
 
-                    if (user.Email != foundedUser.Email) {
+                    if (user.Email == foundedUser.Email) {
                         user.VerifyCode = utilities.makeVerifyCode(6);
                         this.sendVerificationEmail(user);
                     }
