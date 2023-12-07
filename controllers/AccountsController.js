@@ -137,6 +137,7 @@ export default class AccountsController extends Controller {
             this.HttpContext.response.notImplemented();
     }
     // PUT:account/modify body payload[{"Id": 0, "Name": "...", "Email": "...", "Password": "..."}]
+    
     modify(user) {
         // empty asset members imply no change and there values will be taken from the stored record
         if (Authorizations.writeGranted(this.HttpContext, Authorizations.user())) {
@@ -144,12 +145,11 @@ export default class AccountsController extends Controller {
                 user.Created = utilities.nowInSeconds();
                 let foundedUser = this.repository.findByField("Id", user.Id);
                 if (foundedUser != null) {
-                    user.Authorizations = foundedUser.Authorizations; // user cannot change its own authorizations
-                    user.VerifyCode = foundedUser.VerifyCode;
+                   
                     if (user.Password == '') { // password not changed
                         user.Password = foundedUser.Password;
                     }
-                    user.Authorizations = foundedUser.Authorizations;
+                 
                     if (user.Email != foundedUser.Email) {
                         user.VerifyCode = utilities.makeVerifyCode(6);
                         this.sendVerificationEmail(user);

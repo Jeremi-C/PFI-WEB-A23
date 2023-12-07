@@ -1,5 +1,6 @@
 function deconnection(message = undefined){
     API.eraseLoggedUser();
+    API.eraseAccessToken();
     renderLogin({loginMessage:message=!PointerEvent?message:undefined});
 }
 
