@@ -4,6 +4,7 @@ let contentScrollPosition = 0;
 function showWaitingGif() {
     eraseContent();
     $("#content").append($("<div class='waitingGifcontainer'><img class='waitingGif' src='images/Loading_icon.gif' /></div>'"));
+  
 }
 function eraseHeader() {
     $("#header").empty();
@@ -125,8 +126,9 @@ function UpdateHeader( nom,  selected) {
 }
 
 function renderAbout() {
-  
-    timeout();
+    if(API.retrieveLoggedUser() != null){
+      timeout();
+    }
     saveContentScrollPosition();
     eraseContent();
     UpdateHeader("À propos", "about");
@@ -151,7 +153,9 @@ function renderAbout() {
         `))
 }
 function renderLogin(login = {loginMessage:undefined, Email:undefined, EmailError:undefined, passwordError:undefined}) {
-    timeout();
+    if(API.retrieveLoggedUser() != null){
+      timeout();
+    }
     saveContentScrollPosition();
     eraseContent();
     UpdateHeader("Connection", "login");
@@ -303,13 +307,19 @@ function renderProfil(message = {error:undefined}){
     addConflictValidation(API.checkConflictURL(), 'Email', 'saveUser');
     $("#editProfilForm").submit(function(e){
         e.preventDefault();
-        let profil = getFormData($('#editProfilForm'));
+        let profil = API.getFormData($('#editProfilForm'));
         if(profil.matchedPassword != profil.Password){
             renderProfil({error:"Les deux mots de passe doit être pareil"});
         }
         else{
             delete profil.matchedPassword;
             delete profil.matchedEmail;
+            if(profil.Avatar == ""){
+              const ar = loggedUser.Avatar.split("/"); 
+              var c=ar.length;
+              profil.Avatar=ar[c-1];
+            }
+            console.log(profil);
             API.modifyUserProfil(profil).then((data) =>{
                 if(data == false){
                     console.log("fail");
@@ -344,8 +354,8 @@ function renderDeleteProfil(profil = null){
             <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
         </div>
     </div>
-    <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);</script>`);
-    document.getElementById("eraseAccount").addEventListener("click", deleteProfil(profil));
+    <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);
+    document.getElementById("eraseAccount").addEventListener("click", deleteProfil);</script>`);
 }
 
 function renderDeletetarget(evt){
@@ -636,6 +646,33 @@ function renderUsager(data, button = false,i=null){
   
     `);
    
+}
+
+function renderDeletetarget(evt){
+    users[evt.currentTarget.myParam]
+    timeout();
+    saveContentScrollPosition();
+    eraseContent();
+    UpdateHeader("suppretion d'usager", "");
+    $("#content").append(`
+    <div class="aboutContainer">` +
+    users[evt.currentTarget.myParam]==null?`<h1>Voulez-vous vraiment effacer ce compte?</h1>`:
+    `<h1>Voulez-vous vraiment effacer cet usager et toutes ces photos?</h1>`);
+
+    renderUsager(users[evt.currentTarget.myParam]);
+
+    $("#content").append(
+        `<div class="cancel" style="margin-top:20px">
+            <button class="form-control btn-danger" id="eraseAccount">Effacer utilisateur</button>
+        </div>
+        <div class="cancel" style="margin-top:20px">
+            <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
+        </div>
+    </div>
+    <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);</script>
+    <script>document.getElementById("eraseAccount").addEventListener("click", deleteuser);
+    document.getElementById("eraseAccount").myParam=${evt.currentTarget.myParam};</script>`);
+
 }
 
 
