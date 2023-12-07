@@ -16,6 +16,7 @@ RouteRegister.add('PUT', 'accounts', 'modify');
 RouteRegister.add('PUT', 'accounts', 'update');
 RouteRegister.add('GET', 'accounts', 'remove');
 RouteRegister.add('GET', 'accounts', 'conflict');
+RouteRegister.add('PUT', 'accounts', 'update');
 
 let server = new APIServer();
 server.start();
