@@ -200,7 +200,14 @@ function renderLogin(login = {loginMessage:undefined, Email:undefined, EmailErro
                     }
                 }
                 else{
-                    renderImage();
+                    let loggedUser = API.retrieveLoggedUser();
+                    if(loggedUser.VerifyCode == "verified"){
+                        renderImage();
+                    }else if(loggedUser.VerifyCode == "blocked"){
+                        renderLogin({loginMessage:"Votre compte est blocké"});
+                    }else{
+                        renderVerification();
+                    }
                 }
             });
         });
@@ -317,14 +324,19 @@ function renderProfil(message = {error:undefined}){
     });
 }
 
-function renderDeleteProfil(){
+function renderDeleteProfil(profil = null){
     timeout();
     saveContentScrollPosition();
     eraseContent();
     UpdateHeader("Retrait de compte", "");
     $("#content").append(`
-    <div class="aboutContainer">
-        <h1>Voulez-vous vraiment effacer votre compte?</h1>
+    <div class="aboutContainer">` +
+    profil==null?`<h1>Voulez-vous vraiment effacer votre compte?</h1>`:
+    `<h1>Voulez-vous vraiment effacer cet usager et toutes ces photos?</h1>`);
+    
+    renderGestionUsager(profil);
+
+    $("#content").append(`
         <div class="cancel" style="margin-top:20px">
             <button class="form-control btn-danger" id="eraseAccount">Effacer mon compte</button>
         </div>
@@ -332,16 +344,17 @@ function renderDeleteProfil(){
             <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
         </div>
     </div>
-    <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);
-    document.getElementById("eraseAccount").addEventListener("click", deleteProfil);</script>`);
+    <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);</script>`);
+    document.getElementById("eraseAccount").addEventListener("click", deleteProfil(profil));
 }
 
-function renderCreateProfil() {
+function renderCreateProfil(message = {error:undefined}) {
     noTimeout(); // ne pas limiter le temps d’inactivité
     eraseContent(); // effacer le conteneur #content
     UpdateHeader("Inscription", "createProfil"); // mettre à jour l’entête et menu
     $("#newPhotoCmd").hide(); // camouffler l’icone de commande d’ajout de photo
-    $("#content").append(`
+    $("#content").append(
+    (message.error!=undefined?`<h3 class="errorContainer">${message.error}<h3>`:``)+`
     <form class="form" id="createProfilForm">
         <fieldset>
             <legend>Adresse ce courriel</legend>
@@ -423,12 +436,52 @@ function renderCreateProfil() {
     // event.preventDefault();// empêcher le fureteur de soumettre une requête de soumission
         showWaitingGif(); // afficher GIF d’attente
         createProfil(profil); // commander la création au service API
-
     });
 }
 
 function renderVerification(){
-
+    saveContentScrollPosition();
+    eraseContent();
+    UpdateHeader("Vérification", "");
+    $("#content").append($(`
+    <h1>Veuillez entrer le code de vérification que vous avez reçu par courriel</h1>
+    <div class="content" style="text-align:center">
+        <form class="form" id="loginForm">
+            <input type='email'
+                name='Email'
+                class="form-control"
+                required
+                RequireMessage = 'Veuillez entrer votre courriel'
+                InvalidMessage = 'Courriel invalide'
+                placeholder="adresse de courriel"
+            <input type='submit' name='submit' value="Entrer" class="form-control btn-primary">
+        </form>
+        <div class="form">
+            <hr>
+            <button class="form-control btn-info" id="createProfilCmd">Nouveau compte</button>
+        </div>
+    </div>
+    <script>document.getElementById("createProfilCmd").addEventListener("click", renderCreateProfil);</script>`));
+    $("#loginForm").submit(function(e){
+        e.preventDefault();
+        API.login($("input[name=Email]").val(), $("input[name=Password]").val()).then((data)=>{
+            if(data == false){
+                switch(API.currentStatus){
+                    case 481:
+                        renderLogin({EmailError:API.currentHttpError})
+                        break;
+                    case 482:
+                        renderLogin({passwordError:API.currentHttpError})
+                        break;
+                    default:
+                        renderLogin({loginMessage:"Le serveur ne répond pas"})
+                }
+            }
+            else{
+                renderImage();
+            }
+        });
+    });
 }
 
 let users;
@@ -439,14 +492,12 @@ function renderGestionUsager(data = {message:undefined}){
     eraseContent();
     UpdateHeader("Gestion des usagers", "");
     $("#content").append(data.message!=undefined?`<h3 class="errorContainer">${data.message}<h3>`:``)
-   
-        API.GetAccounts().then((data) => {
-            users = data.data;
-            for(i = 0; i < users.length; i++){
-                renderUsager(users[i], true, i);
-            }
-        });
-    
+    API.GetAccounts().then((data) => {
+        users = data.data;
+        for(i = 0; i < users.length; i++){
+            renderUsager(users[i], true, i);
+        }
+    });
 }
 function block(evt){
   

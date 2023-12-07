@@ -1,6 +1,6 @@
 function deconnection(message = undefined){
     API.eraseLoggedUser();
-    renderLogin({loginMessage:message});
+    renderLogin({loginMessage:message=!PointerEvent?message:undefined});
 }
 
 async function deleteProfil(profil) {
@@ -19,7 +19,6 @@ async function deleteProfil(profil) {
         } else
             renderUsager({message:"Un problème est survenu."});
     }
-    //renderUsager();
 }
 
 function getFormData($form) {
@@ -32,7 +31,12 @@ function getFormData($form) {
 }
 
 function createProfil(profil){
-    API.register(profil);
-    renderLogin({loginMessage:"Votre compte a été créé. Veuillez prendre vos courriels pour reccupérer votre code de vérification qui vous sera demandé lors de votre prochaine connexion"});
-
+    API.register(profil).then((data => {
+        if(!data){
+            renderCreateProfil({error:"Il y a eu un problême durant la création de profil"})
+        }
+        else{
+            renderLogin({loginMessage:"Votre compte a été créé. Veuillez prendre vos courriels pour reccupérer votre code de vérification qui vous sera demandé lors de votre prochaine connexion"});
+        }
+    }));
 }
