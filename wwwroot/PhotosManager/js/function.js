@@ -1,25 +1,18 @@
 function deconnection(message = undefined){
-    API.eraseLoggedUser();
-    console.log(sessionStorage.access_Token);
-    API.DeleteToken(sessionStorage.access_Token);
-    renderLogin({loginMessage:message=!PointerEvent?message:undefined});
+    API.logout();
+    renderLogin({loginMessage:(message=!PointerEvent?message:undefined)});
 }
 
-async function deleteProfil(profil) {
-    if(profil==null){
-        let loggedUser = API.retrieveLoggedUser();
-        if (loggedUser) {
-            if (await API.unsubscribeAccount(loggedUser.Id)) {
-                deconnection("Votre compte a été effacé.")
-            } else
-                renderProfil({error:"Un problème est survenu."});
+function deleteProfil() {
+    let loggedUser = API.retrieveLoggedUser();
+    if (loggedUser) {
+      API.unsubscribeAccount(loggedUser.Id).then((data) => {
+        if (data) {
+            deconnection("Votre compte a été effacé.");
+        } else{
+          renderProfil({error:"Un problème est survenu."});
         }
-    }
-    else{
-        if (await API.unsubscribeAccount(profil.Id)) {
-            renderUsager();
-        } else
-            renderUsager({message:"Un problème est survenu."});
+      });
     }
 }
 
