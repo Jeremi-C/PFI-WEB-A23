@@ -19,7 +19,7 @@ function restoreContentScrollPosition() {
 }
 function UpdateHeader( nom,  selected) {
  let loggedUser = API.retrieveLoggedUser();
- console.log(loggedUser);
+
     eraseHeader();
 
     $("#header").append(   
@@ -448,7 +448,31 @@ function renderGestionUsager(data = {message:undefined}){
         });
     
 }
-
+function block(evt){
+  
+    API.modifyUserProfil({Id:users[evt.currentTarget.myParam].Id, VerifyCode:"blocked"});
+    renderGestionUsager();
+}
+function Unblock(evt){
+   
+    API.modifyUserProfil({Id:users[evt.currentTarget.myParam].Id, VerifyCode:"verified"});
+    renderGestionUsager();
+}
+function upgrade(evt){
+    
+    API.modifyUserProfil({Id:users[evt.currentTarget.myParam].Id, Authorizations:{readAccess:2,writeAccess:2}});
+    renderGestionUsager();
+}
+function downgrade(evt){
+    
+    API.modifyUserProfil({Id:users[evt.currentTarget.myParam].Id, Authorizations:{readAccess:1,writeAccess:1}});
+    renderGestionUsager();
+}
+function deleteuser(evt){
+    API.unsubscribeAccount(users[evt.currentTarget.myParam].Id)
+   
+    renderGestionUsager();
+}
 function renderUsager(data, button = false,i=null){
     $("#content").append(`
     <div class="UserContainer">
@@ -466,49 +490,44 @@ function renderUsager(data, button = false,i=null){
         `<div class="UserCommandPanel">` +
             (data.Authorizations.readAccess==2?` 
             
-            <span  id="downgrade${i}">
+            <pressable class="item" id="downgrade${i}")>
                 <i class="fas fa-user-cog dodgerblueCmd"></i>
-                
-            </span>
+                <script>document.getElementById("downgrade${i}").addEventListener("click", downgrade,false);
+                document.getElementById("downgrade${i}").myParam=${i};   </script>
+            </pressable>
             `:
-            `<span id="upgrade${i}" 
-            class="fas fa-user-alt dodgerblueCmd"
-            title="@TooltipMessage"
-            data-placement="@ToolTipPlacement"
-            style="color: @color;"
-            param=@param> <!--non-Admin-->
-            </span>`) +
+            `<pressable id="upgrade${i}" 
+            class="fas fa-user-alt dodgerblueCmd">
+            <script>document.getElementById("upgrade${i}").addEventListener("click", upgrade,false);
+    document.getElementById("upgrade${i}").myParam=${i};   </script>
+           </pressable>`) +
             (data.VerifyCode=="blocked"?`
-            <span id="Unblock${i}" 
+            <pressable id="Unblock${i}" 
             class="fa fa-ban redCmd"
-            title="@TooltipMessage"
-            data-placement="@ToolTipPlacement"
-            style="color: @color;"
-            param=@param> <!--blocked user-->
-            </span>`:`
-            <span id="Block${i}" 
+           >    <script>document.getElementById("Unblock${i}").addEventListener("click", Unblock,false);
+           document.getElementById("Unblock${i}").myParam=${i};   </script>
+           </pressable>`:`
+            <pressable id="Block${i}" 
             class="fa-regular fa-circle greenCmd"
-            title="@TooltipMessage"
-            data-placement="@ToolTipPlacement"
-            style="color: @color;"
-            param=@param> <!--non-blocked user-->
-            </span>`) + 
-            `<span id="erase${i}" 
-            class="fas fa-user-slash goldenrodCmd"
-            title="@TooltipMessage"
-            data-placement="@ToolTipPlacement"
-            style="color: @color;"
-            param=@param> <!--erase user-->
-            </span>
+            >     <script> document.getElementById("Block${i}").addEventListener("click", block,false);
+            document.getElementById("Block${i}").myParam=${i};   </script> </pressable>`) + 
+            `<pressable id="erase${i}" 
+            class="fas fa-user-slash goldenrodCmd">
+            
+    <script>document.getElementById("erase${i}").addEventListener("click", deleteuser,false);
+    document.getElementById("erase${i}").myParam=${i};    </script>
+            </pressable>
         </div>`:``) + 
     `</div>
-    <script>document.getElementById("downgrade${i}").addEventListener("click", renderabout);
-   document.getElementById("upgrade${i}").addEventListener("click", API.GetAccounts());
-    document.getElementById("Block${i}").addEventListener("click", renderProfil);
-   document.getElementById("Unblock${i}").addEventListener("click", renderProfil);
-   document.getElementById("Block${i}").addEventListener("click", renderProfil);
-    document.getElementById("erase${i}").addEventListener("click", renderProfil);</script>
+
+   
+   
+
+    
+  
+  
     `);
+   
 }
 
 
