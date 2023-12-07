@@ -132,7 +132,7 @@ class API {
         API.initHttpState();
         return new Promise(resolve => {
             $.ajax({
-                url: serverHost + "/Accounts/modify/" + profil.Id,
+                url: serverHost + "/Accounts/update/" + profil.Id,
                 type: 'PUT',
                 contentType: 'application/json',
                 headers: API.getBearerAuthorizationToken(),

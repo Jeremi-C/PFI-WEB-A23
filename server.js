@@ -13,6 +13,7 @@ RouteRegister.add('POST', 'accounts', 'register');
 RouteRegister.add('GET', 'accounts', 'verify');
 RouteRegister.add('GET', 'accounts', 'logout');
 RouteRegister.add('PUT', 'accounts', 'modify');
+RouteRegister.add('PUT', 'accounts', 'update');
 RouteRegister.add('GET', 'accounts', 'remove');
 RouteRegister.add('GET', 'accounts', 'conflict');
 

@@ -1,7 +1,6 @@
 function deconnection(message = undefined){
     API.eraseLoggedUser();
-    console.log(sessionStorage.access_Token);
-    API.DeleteToken(sessionStorage.access_Token);
+    API.logout();
     renderLogin({loginMessage:message=!PointerEvent?message:undefined});
 }
 

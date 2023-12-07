@@ -334,7 +334,7 @@ function renderDeleteProfil(profil = null){
     profil==null?`<h1>Voulez-vous vraiment effacer votre compte?</h1>`:
     `<h1>Voulez-vous vraiment effacer cet usager et toutes ces photos?</h1>`);
     
-    renderGestionUsager(profil);
+    renderUsager(profil);
 
     $("#content").append(`
         <div class="cancel" style="margin-top:20px">
@@ -347,6 +347,34 @@ function renderDeleteProfil(profil = null){
     <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);</script>`);
     document.getElementById("eraseAccount").addEventListener("click", deleteProfil(profil));
 }
+
+function renderDeletetarget(evt){
+    users[evt.currentTarget.myParam]
+    timeout();
+    saveContentScrollPosition();
+    eraseContent();
+    UpdateHeader("suppretion d'usager", "");
+    $("#content").append(`
+    <div class="aboutContainer">` +
+    users[evt.currentTarget.myParam]==null?`<h1>Voulez-vous vraiment effacer ce compte?</h1>`:
+    `<h1>Voulez-vous vraiment effacer cet usager et toutes ces photos?</h1>`);
+    
+    renderUsager(users[evt.currentTarget.myParam]);
+
+    $("#content").append(`
+        <div class="cancel" style="margin-top:20px">
+            <button class="form-control btn-danger" id="eraseAccount">Effacer utilisateur</button>
+        </div>
+        <div class="cancel" style="margin-top:20px">
+            <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
+        </div>
+    </div>
+    <script>document.getElementById("abortCmd").addEventListener("click", renderProfil);</script>
+    <script>document.getElementById("eraseAccount").addEventListener("click", deleteuser);
+    document.getElementById("eraseAccount").myParam=${evt.currentTarget.myParam};</script>`);
+   
+}
+
 
 function renderCreateProfil(message = {error:undefined}) {
     noTimeout(); // ne pas limiter le temps d’inactivité
@@ -431,6 +459,10 @@ function renderCreateProfil(message = {error:undefined}) {
         event.preventDefault();
         console.log("yes");
         let profil = API.getFormData($('#createProfilForm'));
+        
+
+
+
         delete profil.matchedPassword;
         delete profil.matchedEmail;
     // event.preventDefault();// empêcher le fureteur de soumettre une requête de soumission
@@ -550,6 +582,7 @@ function downgrade(evt){
 
 }
 function deleteuser(evt){
+    
     API.unsubscribeAccount(users[evt.currentTarget.myParam].Id)
    
     renderGestionUsager();
@@ -595,17 +628,11 @@ function renderUsager(data, button = false,i=null){
             `<pressable id="erase${i}" 
             class="fas fa-user-slash goldenrodCmd">
             
-    <script>document.getElementById("erase${i}").addEventListener("click", deleteuser,false);
+    <script>document.getElementById("erase${i}").addEventListener("click", renderDeletetarget,false);
     document.getElementById("erase${i}").myParam=${i};    </script>
             </pressable>
         </div>`:``) + 
     `</div>
-
-   
-   
-
-    
-  
   
     `);
    
