@@ -490,34 +490,78 @@ function renderGestionUsager(data = {message:undefined}){
     timeout();
     saveContentScrollPosition();
     eraseContent();
+    let loggedUser2 = API.retrieveLoggedUser();
     UpdateHeader("Gestion des usagers", "");
     $("#content").append(data.message!=undefined?`<h3 class="errorContainer">${data.message}<h3>`:``)
     API.GetAccounts().then((data) => {
         users = data.data;
         for(i = 0; i < users.length; i++){
-            renderUsager(users[i], true, i);
+            if(loggedUser2.Id!=users[i].Id){
+                renderUsager(users[i], true, i);
+            }
+           
         }
     });
 }
+
+
+//"Id": "17988070-7f22-11ee-b433-0bad428eeaac",
+//"Email": "Nicolas.Chourot@clg.qc.ca",
+
+//"Name": "Nicolas Chourot",
+
+//"Created": 1699734739,
+//"Authorizations": {
+//    "readAccess": 1,
+//    "writeAccess": 1
+
+//"VerifyCode": "verified"
 function block(evt){
-  
-    API.modifyUserProfil({Id:users[evt.currentTarget.myParam].Id, VerifyCode:"blocked"});
+    let profil = users[evt.currentTarget.myParam];
+    profil.VerifyCode="blocked";
+    profil.Password='';
+    const ar = profil.Avatar.split("/"); 
+    var c=ar.length;
+    profil.Avatar=ar[c-1];
+    console.log(profil.Avatar);
+    API.modifyTargetProfil(profil);
     renderGestionUsager();
 }
 function Unblock(evt){
-   
-    API.modifyUserProfil({Id:users[evt.currentTarget.myParam].Id, VerifyCode:"verified"});
-    renderGestionUsager();
+    let profil = users[evt.currentTarget.myParam];
+    profil.VerifyCode="verified";
+    profil.Password='';
+    
+    const ar = profil.Avatar.split("/"); 
+    var c=ar.length;
+    profil.Avatar=ar[c-1];
+    console.log(profil.Avatar);
+    API.modifyTargetProfil(profil);
+      renderGestionUsager();
 }
 function upgrade(evt){
-    
-    API.modifyUserProfil({Id:users[evt.currentTarget.myParam].Id, Authorizations:{readAccess:2,writeAccess:2}});
-    renderGestionUsager();
+    let profil = users[evt.currentTarget.myParam];
+    profil.Authorizations={readAccess:2,writeAccess:2};
+    profil.Password='';
+    const ar = profil.Avatar.split("/"); 
+    var c=ar.length;
+    profil.Avatar=ar[c-1];
+    console.log(profil.Avatar);
+    API.modifyTargetProfil(profil);
+      renderGestionUsager();
+
 }
 function downgrade(evt){
-    
-    API.modifyUserProfil({Id:users[evt.currentTarget.myParam].Id, Authorizations:{readAccess:1,writeAccess:1}});
-    renderGestionUsager();
+    let profil = users[evt.currentTarget.myParam];
+    profil.Authorizations={readAccess:1,writeAccess:1};
+    profil.Password='';
+    const ar = profil.Avatar.split("/"); 
+    var c=ar.length;
+    profil.Avatar=ar[c-1];
+    console.log(profil.Avatar);
+    API.modifyTargetProfil(profil);
+      renderGestionUsager();
+
 }
 function deleteuser(evt){
     API.unsubscribeAccount(users[evt.currentTarget.myParam].Id)
@@ -534,7 +578,7 @@ function renderUsager(data, button = false,i=null){
             <div>
                 <h3>${data.Name}</h3>
                 <a>${data.Email}</a>
-                
+               
             </div>
         </div>` +
         (button?
@@ -551,7 +595,7 @@ function renderUsager(data, button = false,i=null){
             class="fas fa-user-alt dodgerblueCmd">
             <script>document.getElementById("upgrade${i}").addEventListener("click", upgrade,false);
     document.getElementById("upgrade${i}").myParam=${i};   </script>
-           </pressable>`) +
+           </pressable>`) + 
             (data.VerifyCode=="blocked"?`
             <pressable id="Unblock${i}" 
             class="fa fa-ban redCmd"
