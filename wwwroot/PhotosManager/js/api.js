@@ -1,6 +1,6 @@
 ////////////////////////////////////////////// API photos_APIs call ///////////////////////////////////////////////////////
 
-const serverHost = "http://localhost:5000";
+const serverHost = "https://literate-towering-pedestrian.glitch.me";
 const photos_API = "/api/photos";
 
 class API {
@@ -132,7 +132,7 @@ class API {
         API.initHttpState();
         return new Promise(resolve => {
             $.ajax({
-                url: serverHost + "/Accounts/modify/" + profil.Id,
+                url: serverHost + "/Accounts/update/" + profil.Id,
                 type: 'PUT',
                 contentType: 'application/json',
                 headers: API.getBearerAuthorizationToken(),
